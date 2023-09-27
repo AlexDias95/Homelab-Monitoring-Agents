@@ -1,0 +1,23 @@
+---
+- name: "Deploy node_exporter"
+  community.docker.docker_container:
+    name: "node-exporter"
+    recreate: true
+    image: quay.io/prometheus/node-exporter:latest
+    command: 
+    - "--path.rootfs=/host {{ exporter_options | join(' ')}}"
+    network_mode: host
+    pid_mode: host
+    restart_policy: unless-stopped
+    volumes:
+      - "/:/host:ro,rslave"
+  become: true
+  when: action == "deploy"
+
+
+- name: "Remove node_exporter"
+  community.docker.docker_container:
+    name: "node-exporter"
+    state: absent
+  become: true
+  when: action == "remove"

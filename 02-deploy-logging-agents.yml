@@ -1,0 +1,16 @@
+---
+- name: Install logging agents
+  hosts: monitoring
+  gather_facts: true
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: false
+
+  tasks:
+    - include_role: 
+        name: promtail_exporter
+      tags: promtail_exporter
+
+
+
+
+
