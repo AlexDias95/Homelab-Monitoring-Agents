@@ -1,5 +1,5 @@
 ---
-- name: Install logging agents
+- name: Install graphics agents
   hosts: graphics-server
   gather_facts: true
   environment:
@@ -7,8 +7,8 @@
 
   tasks:
     - include_role: 
-        name: promtail_agent
-      tags: promtail_agent
+        name: grafana
+      tags: grafana
 
 
 

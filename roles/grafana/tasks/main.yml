@@ -1,0 +1,40 @@
+---
+- name: Create Grafana folder
+  file:
+    path: "{{ item }}"
+    state: directory
+  become: true
+  when: action == "deploy"
+  loop:
+    - /etc/grafana
+
+- name: "Deploy Grafana"
+  community.docker.docker_container:
+    name: "Grafana"
+    recreate: true
+    image: grafana/grafana:latest
+    network_mode: host
+    pid_mode: host
+    restart_policy: unless-stopped
+    volumes:
+      - "/etc/grafana:/var/lib/grafana"
+    privileged: true
+  become: true
+  when: action == "deploy"
+
+
+- name: "Remove Grafana"
+  community.docker.docker_container:
+    name: "Grafana"
+    state: absent
+  become: true
+  when: action == "remove"
+
+- name: Remove Grafana folder
+  file:
+    path: "{{ item }}"
+    state: absent
+  become: true
+  when: action == "remove"
+  loop:
+    - /etc/grafana

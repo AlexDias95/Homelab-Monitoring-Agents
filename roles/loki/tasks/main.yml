@@ -34,7 +34,7 @@
 
 - name: "Remove Loki"
   community.docker.docker_container:
-    name: "Loki-agent"
+    name: "Loki"
     state: absent
   become: true
   when: action == "remove"
