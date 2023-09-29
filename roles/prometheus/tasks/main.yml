@@ -7,7 +7,7 @@
   when: action == "deploy"
   loop:
     - /etc/prometheus
-    - /opt/prometheus
+    - /opt/prometheus/data
 
 - name: Copy Prometheus config
   template:
@@ -26,9 +26,9 @@
     restart_policy: unless-stopped
     volumes:
       - "/opt/prometheus:/prometheus"
-      - "/etc/prometheus/:/etc/prometheus/"
+      - "/etc/prometheus:/etc/prometheus"
     privileged: true
-    command: -config.file=/etc/prometheus/docker-config.yml
+    command: --web.listen-address="0.0.0.0:9020" --config.file=/etc/prometheus/prometheus.yml
   become: true
   when: action == "deploy"
 
@@ -55,4 +55,4 @@
   when: action == "remove"
   loop:
     - /etc/prometheus
-    - /opt/prometheus
+    - /opt/prometheus/data

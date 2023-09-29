@@ -1,0 +1,57 @@
+---
+- name: Create Loki folder
+  file:
+    path: "{{ item }}"
+    state: directory
+  become: true
+  when: action == "deploy"
+  loop:
+    - /etc/loki
+    - /opt/Loki
+
+- name: Copy Loki config
+  template:
+    src: loki.yml.j2
+    dest: /etc/loki/local-config.yaml
+  become: true
+  when: action == "deploy"
+
+- name: "Deploy Loki"
+  community.docker.docker_container:
+    name: "Loki"
+    recreate: true
+    image: grafana/loki:latest
+    network_mode: host
+    pid_mode: host
+    restart_policy: unless-stopped
+    volumes:
+      - "/opt/loki:/loki"
+      - "/etc/loki/:/etc/loki/"
+    privileged: true
+  become: true
+  when: action == "deploy"
+
+
+- name: "Remove Loki"
+  community.docker.docker_container:
+    name: "Loki-agent"
+    state: absent
+  become: true
+  when: action == "remove"
+
+- name: Remove Loki config
+  file:
+    path: /etc/loki/local-config.yaml
+    state: absent
+  become: true
+  when: action == "remove"
+
+- name: Remove Loki folder
+  file:
+    path: "{{ item }}"
+    state: absent
+  become: true
+  when: action == "remove"
+  loop:
+    - /etc/loki
+    - /opt/Loki

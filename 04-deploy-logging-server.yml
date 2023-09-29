@@ -1,5 +1,5 @@
 ---
-- name: Install logging agents
+- name: Install logging server
   hosts: logging-server
   gather_facts: true
   environment:
@@ -7,8 +7,8 @@
 
   tasks:
     - include_role: 
-        name: promtail_agent
-      tags: promtail_agent
+        name: loki
+      tags: loki
 
 
 
