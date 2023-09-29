@@ -1,0 +1,53 @@
+---
+- name: Create Promtail folder
+  file:
+    path: /etc/promtail
+    state: directory
+  become: true
+  when: action == "deploy"
+
+- name: Copy Promtail config
+  template:
+    src: promtail.yml.j2
+    dest: /etc/promtail/promtail.yml
+  become: true
+  when: action == "deploy"
+
+- name: "Deploy promtail_agent"
+  community.docker.docker_container:
+    name: "promtail-agent"
+    recreate: true
+    image: grafana/promtail:latest
+    network_mode: host
+    pid_mode: host
+    restart_policy: unless-stopped
+    volumes:
+      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/etc/promtail/promtail.yml:/etc/promtail/docker-config.yml"
+    privileged: true
+    command: -config.file=/etc/promtail/docker-config.yml
+  become: true
+  when: action == "deploy"
+
+
+- name: "Remove promtail_agent"
+  community.docker.docker_container:
+    name: "promtail-agent"
+    state: absent
+  become: true
+  when: action == "remove"
+
+- name: Remove Promtail config
+  file:
+    path: /etc/promtail/promtail.yml
+    state: absent
+  become: true
+  when: action == "remove"
+
+- name: Remove Promtail folder
+  file:
+    path: /etc/promtail
+    state: absent
+  become: true
+  when: action == "remove"

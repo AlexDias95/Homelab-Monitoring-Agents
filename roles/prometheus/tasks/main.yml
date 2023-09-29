@@ -1,0 +1,58 @@
+---
+- name: Create Prometheus folder
+  file:
+    path: "{{ item }}"
+    state: directory
+  become: true
+  when: action == "deploy"
+  loop:
+    - /etc/prometheus
+    - /opt/prometheus
+
+- name: Copy Prometheus config
+  template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+  become: true
+  when: action == "deploy"
+
+- name: "Deploy Prometheus"
+  community.docker.docker_container:
+    name: "Prometheus"
+    recreate: true
+    image: prom/prometheus:latest
+    network_mode: host
+    pid_mode: host
+    restart_policy: unless-stopped
+    volumes:
+      - "/opt/prometheus:/prometheus"
+      - "/etc/prometheus/:/etc/prometheus/"
+    privileged: true
+    command: -config.file=/etc/prometheus/docker-config.yml
+  become: true
+  when: action == "deploy"
+
+
+- name: "Remove Prometheus"
+  community.docker.docker_container:
+    name: "Prometheus-agent"
+    state: absent
+  become: true
+  when: action == "remove"
+
+- name: Remove Prometheus config
+  file:
+    path: /etc/prometheus/prometheus.yml
+    state: absent
+  become: true
+  when: action == "remove"
+
+- name: Remove Prometheus folder
+  file:
+    path: "{{ item }}"
+    state: absent
+  become: true
+  when: action == "remove"
+  loop:
+    - /etc/prometheus
+    - /opt/prometheus

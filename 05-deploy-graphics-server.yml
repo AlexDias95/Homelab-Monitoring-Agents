@@ -1,6 +1,6 @@
 ---
 - name: Install logging agents
-  hosts: monitoring
+  hosts: graphics-server
   gather_facts: true
   environment:
     ANSIBLE_HOST_KEY_CHECKING: false
