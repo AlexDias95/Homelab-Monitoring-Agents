@@ -1,0 +1,50 @@
+---
+- name: Create Zabbix Agent folder
+  file:
+    path: /etc/zabbix
+    state: directory
+  become: true
+  when: action == "deploy"
+
+- name: Copy Zabbix Agent config
+  template:
+    src: zabbix_agent2.conf.j2
+    dest: /etc/zabbix/zabbix_agent2.conf
+  become: true
+  when: action == "deploy"
+
+- name: "Deploy zabbix_agent"
+  community.docker.docker_container:
+    name: "zabbix-agent"
+    recreate: true
+    image: zabbix/zabbix-agent2:latest
+    network_mode: host
+    pid_mode: host
+    restart_policy: unless-stopped
+    volumes:
+      - "/etc/zabbix/zabbix_agent2.conf:/etc/zabbix/zabbix_agent2.conf:ro"
+    privileged: true
+  become: true
+  when: action == "deploy"
+
+
+- name: "Remove zabbix_agent"
+  community.docker.docker_container:
+    name: "zabbix-agent"
+    state: absent
+  become: true
+  when: action == "remove"
+
+- name: Remove Zabbix config
+  file:
+    path: /etc/zabbix/zabbix_agent2.conf
+    state: absent
+  become: true
+  when: action == "remove"
+
+- name: Remove Zabbix folder
+  file:
+    path: /etc/zabbix/
+    state: absent
+  become: true
+  when: action == "remove"

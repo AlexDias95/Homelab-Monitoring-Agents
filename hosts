@@ -1,5 +1,7 @@
 [monitoring]
-192.168.2.194 ansible_ssh_user=alex ansible_ssh_port=22
+192.168.2.200 ansible_ssh_user=alex ansible_ssh_port=22
+192.168.2.201 ansible_ssh_user=alex ansible_ssh_port=22
+192.168.2.202 ansible_ssh_user=alex ansible_ssh_port=22
 
 [monitoring-server]
 192.168.2.195 ansible_ssh_user=alex ansible_ssh_port=22

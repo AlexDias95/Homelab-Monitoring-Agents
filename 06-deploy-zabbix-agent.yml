@@ -1,0 +1,16 @@
+---
+- name: Install zabbix agents
+  hosts: monitoring
+  gather_facts: true
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: false
+
+  tasks:
+    - include_role: 
+        name: zabbix_agent
+      tags: zabbix_agent
+
+
+
+
+
